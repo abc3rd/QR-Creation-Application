@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omega-Gold | The Proof of Useful Work Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --magenta: #ea00ea;
+            --blue: #2699fe;
+            --green: #4bce2a;
+            --dark: #3c3c3c;
+            --copper: #c4653a;
+        }
+        body { background-color: var(--dark); color: white; font-family: sans-serif; }
+        .bg-magenta { background-color: var(--magenta); }
+        .bg-blue { background-color: var(--blue); }
+        .bg-green { background-color: var(--green); }
+        .border-copper { border-color: var(--copper); }
+        .text-magenta { color: var(--magenta); }
+        .gradient-text {
+            background: linear-gradient(to right, var(--magenta), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .ucp-border { border: 1px solid rgba(75, 206, 42, 0.3); }
+    </style>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D1N75W37BQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-D1N75W37BQ');
+    </script>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Header -->
+    <nav class="p-6 flex justify-between items-center border-b border-gray-700 bg-[#2b2b2b]">
+        <div class="text-2xl font-bold gradient-text">OMEGA UI, LLC</div>
+        <div class="hidden md:flex space-x-8 font-medium">
+            <a href="#vision" class="hover:text-magenta transition">Vision</a>
+            <a href="#po-uw" class="hover:text-blue transition">PoUW</a>
+            <a href="#ucp" class="hover:text-green transition">UCP Protocol</a>
+            <a href="https://syncloudconnect.com" class="text-copper">Connect</a>
+        </div>
+    </nav>
+
+    <!-- Patent Pending Banner -->
+    <div class="bg-blue text-white text-center py-2 text-sm font-bold uppercase tracking-widest">
+        Patent Pending Disclosure
+    </div>
+
+    <!-- Hero Section -->
+    <header class="py-20 px-6 text-center max-w-4xl mx-auto">
+        <h1 class="text-5xl md:text-7xl font-extrabold mb-6">
+            Beyond Bitcoin: <br><span class="text-magenta">Proof of Useful Work</span>
+        </h1>
+        <p class="text-xl text-gray-300 mb-10">
+            Omega-Gold is the first digital asset backed by <strong>Saved Efficiency</strong>. 
+            Utilizing the Universal Command Protocol (UCP) and NVIDIA Cosmos Reason 2, 
+            we turn computational waste into gold-backed liquidity.
+        </p>
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+            <a href="mailto:ucp@syncloudconnect.com" class="bg-magenta px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:scale-105 transition">Start Minting</a>
+            <a href="#po-uw" class="border-2 border-blue px-8 py-4 rounded-full font-bold text-lg hover:bg-blue transition">How it Works</a>
+        </div>
+    </header>
+
+    <!-- Comparison Grid -->
+    <section id="po-uw" class="py-20 bg-[#333333]">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-12 text-center underline decoration-magenta underline-offset-8">THE EVOLUTION OF WORK</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Bitcoin -->
+                <div class="p-8 bg-[#3c3c3c] border-l-8 border-copper rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4">Bitcoin (PoW)</h3>
+                    <p class="text-gray-400 mb-4">Values the <strong>Energy Expended</strong>. Miners guess random numbers to secure the network. The value is based on the cost of the "waste" required to mint it.</p>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">❌ High Environmental Impact</li>
+                        <li class="flex items-center">❌ "Useless" Computation</li>
+                        <li class="flex items-center">✅ Extreme Security</li>
+                    </ul>
+                </div>
+                <!-- Omega-Gold -->
+                <div class="p-8 bg-[#3c3c3c] border-l-8 border-magenta rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-magenta">Omega-Gold (PoUW)</h3>
+                    <p class="text-gray-400 mb-4">Values the <strong>Intelligence Saved</strong>. Using UCP, we reward miners who complete tasks with the *least* amount of tokens. The "Savings" mints the coin.</p>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">✅ Resource Positive</li>
+                        <li class="flex items-center">✅ Backed by Real Gold (PAXG)</li>
+                        <li class="flex items-center">✅ Deterministic Efficiency</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Trustless Audit Section -->
+    <section class="py-20 bg-black">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2">
+                    <h2 class="text-4xl font-bold mb-6 text-blue">The Trustless Audit</h2>
+                    <h3 class="text-xl text-magenta font-semibold mb-4 italic">"How can you prove you were efficient?"</h3>
+                    <p class="text-gray-400 mb-6 leading-relaxed">
+                        In traditional AI, processing is a "black box." You can't prove you saved money; you can only show how much you spent. 
+                    </p>
+                    <p class="text-gray-400 mb-6 leading-relaxed">
+                        <strong>UCP changes the math.</strong> By using deterministic logic gates, UCP creates a "Capability Manifest" for every task. This manifest acts as a legal specification. If your task finishes in 20% of the time, UCP generates a <strong>Cryptographic Efficiency Receipt</strong> that proves the delta. 
+                    </p>
+                    <div class="flex items-center gap-4 text-green font-bold">
+                        <div class="h-1 w-12 bg-green"></div>
+                        <span>Deterministic Affirmation</span>
+                    </div>
+                </div>
+                <div class="md:w-1/2 ucp-border p-8 rounded-2xl bg-[#1a1a1a]">
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="text-xs font-mono text-gray-500">PROOFOFUSEFULWORK_V1</span>
+                        <span class="bg-green/20 text-green text-[10px] px-2 py-1 rounded">VERIFIED</span>
+                    </div>
+                    <div class="space-y-4 font-mono text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">TASK_ID:</span>
+                            <span class="text-blue">SEC-AUDIT-0130</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-2">
+                            <span class="text-gray-500">SPEC_HASH:</span>
+                            <span class="text-magenta">0x941...BRAD</span>
+                        </div>
+                        <div class="pt-2">
+                            <div class="text-gray-500 text-[10px] mb-1">EFFICIENCY_DELTA</div>
+                            <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-green h-full w-[82%]"></div>
+                            </div>
+                            <div class="flex justify-between mt-1">
+                                <span class="text-[10px] text-green">+82% Saved</span>
+                                <span class="text-[10px] text-gray-600">vs. Baseline</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-3 bg-black rounded border border-gray-800 text-xs leading-tight">
+                            "I confirm that the UCP specification for SEC-AUDIT-0130 was executed with zero-placeholder waste, creating a tangible minting credit of 0.082oz Gold-Collateral."
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- UCP Section -->
+    <section id="ucp" class="py-20">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold mb-8 text-green">Universal Command Protocol (UCP)</h2>
+            <p class="text-lg mb-12 text-gray-300">
+                UCP is the engine that enables PoUW. By standardizing "Dash-Separated" naming conventions and "Zero-Placeholder" logic, UCP allows our AI Agents to perform physical reasoning with 80% less token overhead. 
+            </p>
+            <div class="bg-black p-6 rounded-lg text-left font-mono text-blue shadow-inner">
+                <span class="text-gray-500">// Example UCP Efficiency Minting</span><br>
+                const task = "Analyze-Gold-Vault-Security";<br>
+                const baseline = 2000; <span class="text-gray-500">// Standard Token Cost</span><br>
+                const ucpCost = 400; <span class="text-gray-500">// Optimized UCP Cost</span><br>
+                const omegaMint = (baseline - ucpCost) * 0.0001; <span class="text-gray-500">// Gold-Backed Minting</span><br>
+                console.log("Minting " + omegaMint + " Omega-Gold tokens.");
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-16 px-6 text-center">
+        <div class="mb-8">
+            <p class="text-2xl font-bold gradient-text">Omega UI, LLC</p>
+            <p class="text-gray-500 mt-2">2744 Edison Avenue, Unit-7 Suite C-3<br>Fort Myers, FL 33916</p>
+            <p class="text-copper mt-2">+1 941-882-0130</p>
+        </div>
+        <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto">
+            <p class="text-gray-600 text-sm">© 2026 Omega UI, LLC. Built by Alonza Curry.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="mailto:ucp@syncloudconnect.com" class="text-sm hover:text-magenta transition">ucp@syncloudconnect.com</a>
+                <a href="https://syncloudconnect.com" class="text-sm hover:text-blue transition">Main Website</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
