@@ -21,10 +21,47 @@ export async function GET(req: NextRequest) {
 
     await ratelimitOrThrow(req, "qr");
 
-    const { logo, url, size, level, fgColor, bgColor, margin, hideLogo } =
-      paramsParsed;
+    const {
+      logo,
+      url,
+      size,
+      level,
+      fgColor,
+      bgColor,
+      margin,
+      hideLogo,
+      qrType,
+      dotStyle,
+      cornerStyle,
+      gradientDirection,
+      gradientStartColor,
+      gradientEndColor,
+    } = paramsParsed;
 
-    const qrCodeLogo = await getQRCodeLogo({ url, logo, hideLogo });
+    // For micro/compact types, force hide logo for cleaner output
+    const effectiveHideLogo =
+      qrType === "micro" || qrType === "compact" ? true : hideLogo;
+    const effectiveMargin = qrType === "micro" ? Math.min(margin, 1) : margin;
+
+    const qrCodeLogo = await getQRCodeLogo({
+      url,
+      logo,
+      hideLogo: effectiveHideLogo,
+    });
+
+    // Build style settings for custom/holographic types
+    const qrStyle =
+      qrType === "custom" || qrType === "holographic"
+        ? {
+            dotStyle,
+            cornerStyle,
+            ...(qrType === "holographic" && {
+              gradientDirection,
+              gradientStartColor,
+              gradientEndColor,
+            }),
+          }
+        : undefined;
 
     return new ImageResponse(
       QRCodeSVG({
@@ -33,7 +70,9 @@ export async function GET(req: NextRequest) {
         level,
         fgColor,
         bgColor,
-        margin,
+        margin: effectiveMargin,
+        qrType,
+        qrStyle,
         ...(qrCodeLogo
           ? {
               imageSettings: {

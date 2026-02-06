@@ -45,6 +45,8 @@ export function QRCodePreview() {
     {
       fgColor: "#000000",
       hideLogo: true,
+      qrType: "standard",
+      qrStyle: {},
     },
   );
 
@@ -110,6 +112,8 @@ export function QRCodePreview() {
                 hideLogo={hideLogo}
                 logo={logo}
                 scale={0.5}
+                qrType={data.qrType || "standard"}
+                qrStyle={data.qrStyle}
               />
             </motion.div>
           </AnimatePresence>

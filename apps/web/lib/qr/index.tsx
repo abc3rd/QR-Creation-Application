@@ -14,7 +14,7 @@ import {
   DEFAULT_SIZE,
   ERROR_LEVEL_MAP,
 } from "./constants";
-import { QRProps, QRPropsCanvas } from "./types";
+import { QRCodeType, QRProps, QRPropsCanvas, QRStyleSettings } from "./types";
 import {
   SUPPORTS_PATH2D,
   excavateModules,
@@ -345,22 +345,34 @@ export function getQRData({
   hideLogo,
   logo,
   margin,
+  qrType = "standard",
+  qrStyle,
 }: {
   url: string;
   fgColor?: string;
   hideLogo?: boolean;
   logo?: string;
   margin?: number;
+  qrType?: QRCodeType;
+  qrStyle?: QRStyleSettings;
 }) {
+  // Micro QR uses smaller margin and no logo by default
+  const isMicro = qrType === "micro";
+  const isCompact = qrType === "compact";
+  const effectiveMargin = isMicro ? 1 : margin;
+  const effectiveHideLogo = isMicro || isCompact ? true : hideLogo;
+
   return {
     value: `${url}?qr=1`,
     bgColor: "#ffffff",
     fgColor,
     size: 1024,
-    level: "Q", // QR Code error correction level: https://blog.qrstuff.com/general/qr-code-error-correction
-    hideLogo,
-    margin,
-    ...(!hideLogo && {
+    level: "Q",
+    hideLogo: effectiveHideLogo,
+    margin: effectiveMargin,
+    qrType,
+    qrStyle,
+    ...(!effectiveHideLogo && {
       imageSettings: {
         src: logo || DUB_QR_LOGO,
         height: 256,

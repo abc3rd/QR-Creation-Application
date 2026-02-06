@@ -8,7 +8,15 @@ import {
   DEFAULT_SIZE,
   ERROR_LEVEL_MAP,
 } from "./constants";
-import { Excavation, ImageSettings, Modules, QRPropsSVG } from "./types";
+import {
+  Excavation,
+  ImageSettings,
+  Modules,
+  QRPropsSVG,
+  QRDotStyle,
+  QRCornerStyle,
+  QRStyleSettings,
+} from "./types";
 
 import type { JSX } from "react";
 
@@ -73,6 +81,194 @@ export function generatePath(modules: Modules, margin = 0): string {
     });
   });
   return ops.join("");
+}
+
+/**
+ * Generate SVG elements for styled QR code modules (dots, circles, diamonds, etc.)
+ */
+export function generateStyledModules(
+  modules: Modules,
+  margin: number,
+  dotStyle: QRDotStyle = "square",
+  cornerStyle: QRCornerStyle = "square",
+): JSX.Element[] {
+  const elements: JSX.Element[] = [];
+  const size = modules.length;
+
+  // Identify finder pattern positions (three 7x7 corners)
+  const finderPositions = [
+    { x: 0, y: 0 },       // top-left
+    { x: size - 7, y: 0 }, // top-right
+    { x: 0, y: size - 7 }, // bottom-left
+  ];
+
+  const isFinderModule = (x: number, y: number): boolean => {
+    return finderPositions.some(
+      (fp) => x >= fp.x && x < fp.x + 7 && y >= fp.y && y < fp.y + 7,
+    );
+  };
+
+  modules.forEach((row, y) => {
+    row.forEach((cell, x) => {
+      if (!cell) return;
+
+      const cx = x + margin;
+      const cy = y + margin;
+      const key = `${x}-${y}`;
+
+      if (isFinderModule(x, y)) {
+        // Render finder pattern modules with corner style
+        elements.push(
+          renderCornerModule(cx, cy, cornerStyle, key),
+        );
+      } else {
+        // Render data modules with dot style
+        elements.push(
+          renderDotModule(cx, cy, dotStyle, key),
+        );
+      }
+    });
+  });
+
+  return elements;
+}
+
+function renderDotModule(
+  x: number,
+  y: number,
+  style: QRDotStyle,
+  key: string,
+): JSX.Element {
+  const pad = 0.05; // Small padding between modules
+  switch (style) {
+    case "circle":
+      return (
+        <circle
+          key={key}
+          cx={x + 0.5}
+          cy={y + 0.5}
+          r={0.45}
+          fill="currentColor"
+        />
+      );
+    case "rounded":
+      return (
+        <rect
+          key={key}
+          x={x + pad}
+          y={y + pad}
+          width={1 - pad * 2}
+          height={1 - pad * 2}
+          rx={0.3}
+          ry={0.3}
+          fill="currentColor"
+        />
+      );
+    case "diamond":
+      return (
+        <polygon
+          key={key}
+          points={`${x + 0.5},${y + 0.05} ${x + 0.95},${y + 0.5} ${x + 0.5},${y + 0.95} ${x + 0.05},${y + 0.5}`}
+          fill="currentColor"
+        />
+      );
+    case "square":
+    default:
+      return (
+        <rect
+          key={key}
+          x={x}
+          y={y}
+          width={1}
+          height={1}
+          fill="currentColor"
+        />
+      );
+  }
+}
+
+function renderCornerModule(
+  x: number,
+  y: number,
+  style: QRCornerStyle,
+  key: string,
+): JSX.Element {
+  switch (style) {
+    case "circle":
+      return (
+        <circle
+          key={key}
+          cx={x + 0.5}
+          cy={y + 0.5}
+          r={0.5}
+          fill="currentColor"
+        />
+      );
+    case "rounded":
+      return (
+        <rect
+          key={key}
+          x={x}
+          y={y}
+          width={1}
+          height={1}
+          rx={0.25}
+          ry={0.25}
+          fill="currentColor"
+        />
+      );
+    case "square":
+    default:
+      return (
+        <rect
+          key={key}
+          x={x}
+          y={y}
+          width={1}
+          height={1}
+          fill="currentColor"
+        />
+      );
+  }
+}
+
+/**
+ * Generate an SVG gradient definition for holographic QR codes.
+ */
+export function generateGradientDef(
+  id: string,
+  direction: string = "horizontal",
+  startColor: string = "#8A2BE2",
+  endColor: string = "#00CED1",
+): JSX.Element {
+  if (direction === "radial") {
+    return (
+      <defs>
+        <radialGradient id={id} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={startColor} />
+          <stop offset="100%" stopColor={endColor} />
+        </radialGradient>
+      </defs>
+    );
+  }
+
+  let x1 = "0%", y1 = "0%", x2 = "100%", y2 = "0%";
+  if (direction === "vertical") {
+    x2 = "0%";
+    y2 = "100%";
+  } else if (direction === "diagonal") {
+    x2 = "100%";
+    y2 = "100%";
+  }
+
+  return (
+    <defs>
+      <linearGradient id={id} x1={x1} y1={y1} x2={x2} y2={y2}>
+        <stop offset="0%" stopColor={startColor} />
+        <stop offset="100%" stopColor={endColor} />
+      </linearGradient>
+    </defs>
+  );
 }
 
 export function getImageSettings(
@@ -146,6 +342,8 @@ export function QRCodeSVG(props: QRPropsSVG) {
     margin = DEFAULT_MARGIN,
     isOGContext = false,
     imageSettings,
+    qrType = "standard",
+    qrStyle,
     ...otherProps
   } = props;
 
@@ -154,18 +352,27 @@ export function QRCodeSVG(props: QRPropsSVG) {
 
   // Use a higher error correction level 'Q' when excavation is enabled
   // to ensure the QR code remains scannable despite the removed modules.
-  const effectiveLevel = shouldUseHigherErrorLevel ? "Q" : level;
+  // Also use H for custom/holographic types to handle styled rendering
+  const effectiveLevel =
+    shouldUseHigherErrorLevel
+      ? "Q"
+      : (qrType === "custom" || qrType === "holographic") && (level === "L" || level === "M")
+        ? "Q"
+        : level;
+
+  // For micro/compact types, use minimum version
+  const effectiveMargin = qrType === "micro" ? Math.min(margin, 1) : margin;
 
   let cells = qrcodegen.QrCode.encodeText(
     value,
     ERROR_LEVEL_MAP[effectiveLevel],
   ).getModules();
 
-  const numCells = cells.length + margin * 2;
+  const numCells = cells.length + effectiveMargin * 2;
   const calculatedImageSettings = getImageSettings(
     cells,
     size,
-    margin,
+    effectiveMargin,
     imageSettings,
   );
 
@@ -181,7 +388,7 @@ export function QRCodeSVG(props: QRPropsSVG) {
           calculatedImageSettings,
           size,
           numCells,
-          margin,
+          effectiveMargin,
         );
 
       image = (
@@ -203,21 +410,60 @@ export function QRCodeSVG(props: QRPropsSVG) {
           href={imageSettings.src}
           height={calculatedImageSettings.h}
           width={calculatedImageSettings.w}
-          x={calculatedImageSettings.x + margin}
-          y={calculatedImageSettings.y + margin}
+          x={calculatedImageSettings.x + effectiveMargin}
+          y={calculatedImageSettings.y + effectiveMargin}
           preserveAspectRatio="none"
         />
       );
     }
   }
 
-  // Drawing strategy: instead of a rect per module, we're going to create a
-  // single path for the dark modules and layer that on top of a light rect,
-  // for a total of 2 DOM nodes. We pay a bit more in string concat but that's
-  // way faster than DOM ops.
-  // For level 1, 441 nodes -> 2
-  // For level 40, 31329 -> 2
-  const fgPath = generatePath(cells, margin);
+  // Check if we need styled rendering (custom dot/corner styles or holographic)
+  const useStyledRendering =
+    (qrType === "custom" || qrType === "holographic") && qrStyle;
+  const useGradient = qrType === "holographic" && qrStyle;
+
+  const gradientId = "qr-holo-gradient";
+
+  if (useStyledRendering) {
+    const styledElements = generateStyledModules(
+      cells,
+      effectiveMargin,
+      qrStyle?.dotStyle || (qrType === "holographic" ? "rounded" : "square"),
+      qrStyle?.cornerStyle || "square",
+    );
+
+    const fillColor = useGradient ? `url(#${gradientId})` : fgColor;
+
+    return (
+      <svg
+        height={size}
+        width={size}
+        viewBox={`0 0 ${numCells} ${numCells}`}
+        {...otherProps}
+      >
+        {useGradient &&
+          generateGradientDef(
+            gradientId,
+            qrStyle?.gradientDirection || "horizontal",
+            qrStyle?.gradientStartColor || "#8A2BE2",
+            qrStyle?.gradientEndColor || "#00CED1",
+          )}
+        <path
+          fill={bgColor}
+          d={`M0,0 h${numCells}v${numCells}H0z`}
+          shapeRendering="crispEdges"
+        />
+        <g style={{ color: fillColor }} fill={fillColor}>
+          {styledElements}
+        </g>
+        {image}
+      </svg>
+    );
+  }
+
+  // Standard path-based rendering (most efficient for standard/micro/compact)
+  const fgPath = generatePath(cells, effectiveMargin);
 
   return (
     <svg
