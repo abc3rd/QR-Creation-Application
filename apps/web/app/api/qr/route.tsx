@@ -13,7 +13,39 @@ export const runtime = "edge";
 const CORS_HEADERS = new Headers({
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
 });
+
+/**
+ * Plan-based licensing for QR code types.
+ * Maps each QR type to the minimum plan required.
+ */
+const QR_TYPE_PLAN_REQUIREMENTS: Record<string, string> = {
+  standard: "free",
+  micro: "free",
+  compact: "pro",
+  custom: "pro",
+  holographic: "business",
+  cube3d: "business",
+};
+
+const PLAN_HIERARCHY: Record<string, number> = {
+  free: 0,
+  pro: 1,
+  business: 2,
+  enterprise: 3,
+};
+
+function checkQRTypePlanAccess(
+  qrType: string,
+  workspacePlan: string | null | undefined,
+): { allowed: boolean; requiredPlan: string } {
+  const requiredPlan = QR_TYPE_PLAN_REQUIREMENTS[qrType] || "business";
+  const userLevel = PLAN_HIERARCHY[workspacePlan || "free"] ?? 0;
+  const requiredLevel = PLAN_HIERARCHY[requiredPlan] ?? 0;
+  return { allowed: userLevel >= requiredLevel, requiredPlan };
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -38,6 +70,43 @@ export async function GET(req: NextRequest) {
       gradientEndColor,
     } = paramsParsed;
 
+    // Look up workspace plan for licensing check
+    const shortLink = await getShortLinkViaEdge(url.split("?")[0]);
+    let workspacePlan: string | null = null;
+
+    if (shortLink) {
+      const workspace = await getWorkspaceViaEdge({
+        workspaceId: shortLink.projectId,
+      });
+      workspacePlan = workspace?.plan || null;
+    }
+
+    // Enforce plan-based licensing for advanced QR types
+    if (qrType !== "standard") {
+      const { allowed, requiredPlan } = checkQRTypePlanAccess(
+        qrType,
+        workspacePlan,
+      );
+      if (!allowed) {
+        return new Response(
+          JSON.stringify({
+            error: {
+              code: "forbidden",
+              message: `The "${qrType}" QR code type requires a ${requiredPlan} plan or above. Upgrade to access this feature.`,
+              doc_url: "https://dub.co/help/article/custom-qr-codes",
+            },
+          }),
+          {
+            status: 403,
+            headers: new Headers({
+              ...Object.fromEntries(CORS_HEADERS.entries()),
+              "Content-Type": "application/json",
+            }),
+          },
+        );
+      }
+    }
+
     // For micro/compact types, force hide logo for cleaner output
     const effectiveHideLogo =
       qrType === "micro" || qrType === "compact" ? true : hideLogo;
@@ -47,6 +116,7 @@ export async function GET(req: NextRequest) {
       url,
       logo,
       hideLogo: effectiveHideLogo,
+      workspacePlan,
     });
 
     // Build style settings for custom/holographic types
@@ -100,10 +170,12 @@ const getQRCodeLogo = async ({
   url,
   logo,
   hideLogo,
+  workspacePlan,
 }: {
   url: string;
   logo: string | undefined;
   hideLogo: boolean;
+  workspacePlan: string | null;
 }) => {
   const shortLink = await getShortLinkViaEdge(url.split("?")[0]);
 
@@ -112,11 +184,8 @@ const getQRCodeLogo = async ({
     return DUB_QR_LOGO;
   }
 
-  const workspace = await getWorkspaceViaEdge({
-    workspaceId: shortLink.projectId,
-  });
-
-  if (workspace?.plan === "free") {
+  // Free plan always gets the Dub logo (branding enforcement)
+  if (workspacePlan === "free" || !workspacePlan) {
     return DUB_QR_LOGO;
   }
 
@@ -130,7 +199,11 @@ const getQRCodeLogo = async ({
     return logo;
   }
 
-  // if it's a Dub owned domain and no  workspace logo is set, use the Dub logo
+  const workspace = await getWorkspaceViaEdge({
+    workspaceId: shortLink.projectId,
+  });
+
+  // if it's a Dub owned domain and no workspace logo is set, use the Dub logo
   if (isDubDomain(shortLink.domain) && !workspace?.logo) {
     return DUB_QR_LOGO;
   }
