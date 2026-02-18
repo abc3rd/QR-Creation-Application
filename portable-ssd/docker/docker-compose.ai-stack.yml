@@ -1,0 +1,147 @@
+version: '3.8'
+
+# ============================================================================
+# CloudConnect AI Stack — Portable SSD Edition
+# Ollama + Open WebUI + ComfyUI + AnythingLLM + Portainer
+# ============================================================================
+
+services:
+  # ── Ollama — Local LLM Inference Engine ──────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: cc-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ${PERSIST_ROOT:-/mnt/persist}/data/ollama-models:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - ai-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Fallback Ollama without GPU (used if NVIDIA not available)
+  ollama-cpu:
+    image: ollama/ollama:latest
+    container_name: cc-ollama-cpu
+    restart: "no"
+    profiles: ["cpu-only"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ${PERSIST_ROOT:-/mnt/persist}/data/ollama-models:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+    networks:
+      - ai-net
+
+  # ── Open WebUI — ChatGPT-style interface for Ollama ─────────────────────
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: cc-open-webui
+    restart: unless-stopped
+    ports:
+      - "3001:8080"
+    volumes:
+      - open-webui-data:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_AUTH=false
+      - WEBUI_NAME=CloudConnect AI
+      - DEFAULT_MODELS=llama3.2:3b
+    depends_on:
+      - ollama
+    networks:
+      - ai-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ── ComfyUI — Node-based Stable Diffusion interface ─────────────────────
+  comfyui:
+    image: ghcr.io/ai-dock/comfyui:latest
+    container_name: cc-comfyui
+    restart: unless-stopped
+    ports:
+      - "8188:8188"
+    volumes:
+      - ${PERSIST_ROOT:-/mnt/persist}/data/comfyui-models:/opt/ComfyUI/models
+      - comfyui-output:/opt/ComfyUI/output
+    environment:
+      - CLI_ARGS=--listen 0.0.0.0 --port 8188
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - ai-net
+
+  # ── AnythingLLM — All-in-one RAG + Document chat ────────────────────────
+  anythingllm:
+    image: mintplexlabs/anythingllm:latest
+    container_name: cc-anythingllm
+    restart: unless-stopped
+    ports:
+      - "3002:3001"
+    volumes:
+      - anythingllm-data:/app/server/storage
+    environment:
+      - STORAGE_DIR=/app/server/storage
+      - LLM_PROVIDER=ollama
+      - OLLAMA_BASE_PATH=http://ollama:11434
+      - EMBEDDING_ENGINE=ollama
+      - EMBEDDING_MODEL_PREF=nomic-embed-text
+      - VECTOR_DB=lancedb
+    depends_on:
+      - ollama
+    networks:
+      - ai-net
+
+  # ── Portainer — Docker management UI ────────────────────────────────────
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: cc-portainer
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    networks:
+      - ai-net
+
+networks:
+  ai-net:
+    name: cloudconnect-ai
+    driver: bridge
+
+volumes:
+  open-webui-data:
+    driver: local
+  comfyui-output:
+    driver: local
+  anythingllm-data:
+    driver: local
+  portainer-data:
+    driver: local

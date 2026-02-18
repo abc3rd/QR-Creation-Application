@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=CloudConnect Services
+Comment=Start CloudConnect portable services on login
+Exec=/mnt/persist/scripts/start-all.sh
+Terminal=false
+Hidden=false
+X-GNOME-Autostart-enabled=true
+StartupNotify=false

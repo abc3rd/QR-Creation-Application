@@ -1,0 +1,100 @@
+version: '3.8'
+
+# ============================================================================
+# CloudConnect QR Creation Application — Portable SSD Edition
+# Next.js Frontend + Python QR Engine + PostgreSQL + Redis
+# ============================================================================
+
+services:
+  # ── PostgreSQL Database ──────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: cc-qr-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-qr_app}
+      POSTGRES_USER: ${POSTGRES_USER:-cloudconnect}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cloudconnect_local_dev}
+    volumes:
+      - ${PERSIST_ROOT:-/mnt/persist}/data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - qr-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cloudconnect}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis Cache ──────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: cc-qr-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - ${PERSIST_ROOT:-/mnt/persist}/data/redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - qr-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Python QR Engine (Flask) ─────────────────────────────────────────────
+  qr-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.qr-engine
+    container_name: cc-qr-engine
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_ENV=production
+      - QR_ENGINE_API_KEY=${QR_ENGINE_API_KEY:-dev-local-key}
+      - QR_ENGINE_HMAC_SECRET=${QR_ENGINE_HMAC_SECRET:-dev-local-secret}
+      - QR_ENGINE_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080
+      - QR_RATE_LIMIT=120
+    networks:
+      - qr-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Next.js Web Application ──────────────────────────────────────────────
+  qr-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.qr-web
+    container_name: cc-qr-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-cloudconnect}:${POSTGRES_PASSWORD:-cloudconnect_local_dev}@postgres:5432/${POSTGRES_DB:-qr_app}
+      - REDIS_URL=redis://redis:6379/0
+      - QR_ENGINE_URL=http://qr-engine:5001
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-dev-nextauth-secret-change-me}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qr-engine:
+        condition: service_healthy
+    networks:
+      - qr-net
+
+networks:
+  qr-net:
+    name: cloudconnect-qr
+    driver: bridge
