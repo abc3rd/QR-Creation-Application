@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#3c3c3c">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <title>QR Creation</title>
+  <style>
+    :root {
+      --magenta: #ea00ea;
+      --blue: #2699fe;
+      --green: #4bce2a;
+      --dark: #3c3c3c;
+      --copper: #c4653a;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: var(--dark);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    body { padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+    #app { height: 100%; width: 100%; display: flex; flex-direction: column; }
+    .loading {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 24px;
+      color: white;
+    }
+    .loading .logo {
+      width: 80px; height: 80px; border-radius: 20px;
+      background: linear-gradient(135deg, var(--magenta), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: 700; color: white;
+    }
+    .loading h1 {
+      font-size: 22px; font-weight: 600;
+      background: linear-gradient(135deg, var(--magenta), var(--blue));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .loading .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(255,255,255,0.2);
+      border-top-color: var(--magenta);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="loading">
+      <div class="logo">QR</div>
+      <h1>QR Creation</h1>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
