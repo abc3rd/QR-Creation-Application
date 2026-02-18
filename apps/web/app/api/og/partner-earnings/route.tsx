@@ -193,11 +193,11 @@ function Chart({
     padding.top + chartHeight - (value / maxEarnings) * chartHeight;
 
   const isDark = background === "dark";
-  const lineColorStart = isDark ? "#A78BFA" : "#7D3AEC";
-  const lineColorEnd = isDark ? "#F472B6" : "#DA2778";
-  const circleColor = isDark ? "#F472B6" : "#DA2778";
-  const areaColorStart = isDark ? "#F472B6" : "#DA2778";
-  const areaColorEnd = isDark ? "#DA2778" : "#DA2778";
+  const lineColorStart = isDark ? "#ea00ea" : "#ea00ea";
+  const lineColorEnd = isDark ? "#2699fe" : "#2699fe";
+  const circleColor = isDark ? "#2699fe" : "#ea00ea";
+  const areaColorStart = isDark ? "#2699fe" : "#ea00ea";
+  const areaColorEnd = isDark ? "#ea00ea" : "#2699fe";
   const areaOpacityStart = isDark ? 0.25 : 0.15;
   const areaOpacityEnd = isDark ? 0.05 : 0.02;
 

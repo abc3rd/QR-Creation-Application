@@ -42,4 +42,4 @@ export const getResourceColorData = (color: ResourceColorsEnum) => {
 };
 
 export const RAINBOW_CONIC_GRADIENT =
-  "conic-gradient(in hsl, #ee535d 0deg, #e9d988 90deg, #9fe0b8 180deg, #bf87e4 270deg, #ee535d 360deg)";
+  "conic-gradient(in hsl, #ea00ea 0deg, #2699fe 90deg, #4bce2a 180deg, #c4653a 270deg, #ea00ea 360deg)";

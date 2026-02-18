@@ -66,8 +66,8 @@ export function AnalyticsTimeseriesChart({
         {(context) => (
           <LinearGradient
             id={`${id}-color-gradient`}
-            from="#7D3AEC"
-            to="#DA2778"
+            from="#ea00ea"
+            to="#2699fe"
             x1={0}
             x2={context?.width ?? 1}
             gradientUnits="userSpaceOnUse"

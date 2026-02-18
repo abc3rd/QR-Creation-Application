@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand Colors -->
+    <color name="brand_magenta">#ea00ea</color>
+    <color name="brand_blue">#2699fe</color>
+    <color name="brand_green">#4bce2a</color>
+    <color name="brand_dark">#3c3c3c</color>
+    <color name="brand_copper">#c4653a</color>
+
+    <!-- Theme Colors -->
+    <color name="colorPrimary">#ea00ea</color>
+    <color name="colorPrimaryDark">#b800b8</color>
+    <color name="colorAccent">#2699fe</color>
+    <color name="colorBackground">#3c3c3c</color>
+    <color name="colorSurface">#2b2b2b</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnBackground">#E0E0E0</color>
+    <color name="colorStatusBar">#3c3c3c</color>
+    <color name="colorNavigationBar">#3c3c3c</color>
+    <color name="splashBackground">#3c3c3c</color>
+</resources>

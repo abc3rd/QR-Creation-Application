@@ -1,8 +1,22 @@
 import { getQRAsCanvas, getQRAsSVGDataUri, getQRData } from "@/lib/qr";
+import {
+  HOLOGRAPHIC_PRESETS,
+  QR_CORNER_STYLES,
+  QR_DOT_STYLES,
+  QR_GRADIENT_DIRECTIONS,
+  QR_TYPE_OPTIONS,
+} from "@/lib/qr/constants";
+import type {
+  GradientDirection,
+  QRCodeType,
+  QRCornerStyle,
+  QRDotStyle,
+  QRStyleSettings,
+} from "@/lib/qr/types";
 import useDomain from "@/lib/swr/use-domain";
 import useWorkspace from "@/lib/swr/use-workspace";
 import { QRLinkProps } from "@/lib/types";
-import { QRCode } from "@/ui/shared/qr-code";
+import { QRCode, QRCodeCube3D } from "@/ui/shared/qr-code";
 import {
   Button,
   ButtonTooltip,
@@ -58,6 +72,8 @@ const DEFAULT_COLORS = [
 export type QRCodeDesign = {
   fgColor: string;
   hideLogo: boolean;
+  qrType: QRCodeType;
+  qrStyle: QRStyleSettings;
 };
 
 type LinkQRModalProps = {
@@ -110,6 +126,8 @@ function LinkQRModalInner({
     {
       fgColor: "#000000",
       hideLogo: false,
+      qrType: "standard",
+      qrStyle: {},
     },
   );
 
@@ -127,6 +145,8 @@ function LinkQRModalInner({
             fgColor: data.fgColor,
             hideLogo,
             logo,
+            qrType: data.qrType || "standard",
+            qrStyle: data.qrStyle,
           })
         : null,
     [url, data, hideLogo, logo],
@@ -136,6 +156,11 @@ function LinkQRModalInner({
     (color: string) => setData((d) => ({ ...d, fgColor: color })),
     500,
   );
+
+  const showCustomStyleOptions =
+    data.qrType === "custom" || data.qrType === "holographic";
+  const showHolographicOptions = data.qrType === "holographic";
+  const isCube3D = data.qrType === "cube3d";
 
   return (
     <form
@@ -172,6 +197,60 @@ function LinkQRModalInner({
         </div>
       </div>
 
+      {/* QR Code Type Selector */}
+      <div>
+        <span className="block text-sm font-medium text-neutral-700">
+          QR Code Type
+        </span>
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          {QR_TYPE_OPTIONS.map((option) => {
+            const isSelected = (data.qrType || "standard") === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() =>
+                  setData((d) => ({
+                    ...d,
+                    qrType: option.value,
+                    // Reset style when switching types
+                    qrStyle:
+                      option.value === "holographic"
+                        ? {
+                            dotStyle: "rounded" as QRDotStyle,
+                            cornerStyle: "rounded" as QRCornerStyle,
+                            gradientDirection: "horizontal" as GradientDirection,
+                            gradientStartColor: "#8A2BE2",
+                            gradientEndColor: "#00CED1",
+                          }
+                        : option.value === "custom"
+                          ? {
+                              dotStyle: "circle" as QRDotStyle,
+                              cornerStyle: "square" as QRCornerStyle,
+                            }
+                          : d.qrStyle,
+                  }))
+                }
+                className={cn(
+                  "flex flex-col items-center rounded-lg border p-2 text-center transition-all",
+                  isSelected
+                    ? "border-black bg-neutral-50 ring-1 ring-black"
+                    : "border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50",
+                )}
+              >
+                <span className="text-xs font-medium text-neutral-900">
+                  {option.label}
+                </span>
+                <span className="mt-0.5 text-[10px] text-neutral-500">
+                  {option.description}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* QR Preview */}
       <div>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -214,120 +293,298 @@ function LinkQRModalInner({
           {url && (
             <AnimatePresence mode="wait">
               <motion.div
-                key={data.fgColor + data.hideLogo}
+                key={
+                  data.fgColor +
+                  data.hideLogo +
+                  data.qrType +
+                  JSON.stringify(data.qrStyle)
+                }
                 initial={{ filter: "blur(2px)", opacity: 0.4 }}
                 animate={{ filter: "blur(0px)", opacity: 1 }}
                 exit={{ filter: "blur(2px)", opacity: 0.4 }}
                 transition={{ duration: 0.1 }}
                 className="relative flex size-full items-center justify-center"
               >
-                <QRCode
-                  url={url}
-                  fgColor={data.fgColor}
-                  hideLogo={data.hideLogo}
-                  logo={logo}
-                  scale={1}
-                />
+                {isCube3D ? (
+                  <QRCodeCube3D
+                    url={url}
+                    fgColor={data.fgColor}
+                    hideLogo={data.hideLogo}
+                    logo={logo}
+                    cubeSize={100}
+                  />
+                ) : (
+                  <QRCode
+                    url={url}
+                    fgColor={data.fgColor}
+                    hideLogo={data.hideLogo}
+                    logo={logo}
+                    scale={1}
+                    qrType={data.qrType || "standard"}
+                    qrStyle={data.qrStyle}
+                  />
+                )}
               </motion.div>
             </AnimatePresence>
           )}
         </div>
       </div>
 
-      {/* Logo toggle */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <label
-            className="text-sm font-medium text-neutral-700"
-            htmlFor={`${id}-show-logo`}
-          >
-            Logo
-          </label>
-          <InfoTooltip content="Display your logo in the center of the QR code. [Learn more.](https://dub.co/help/article/custom-qr-codes)" />
-        </div>
-        <Switch
-          id={`${id}-hide-logo`}
-          checked={!data.hideLogo}
-          fn={() => {
-            setData((d) => ({ ...d, hideLogo: !d.hideLogo }));
-          }}
-          disabledTooltip={
-            !plan || plan === "free" ? (
-              <TooltipContent
-                title="You need to be on the Pro plan and above to customize your QR Code logo."
-                cta="Upgrade to Pro"
-                href={slug ? `/${slug}/upgrade` : "https://dub.co/pricing"}
-                target="_blank"
-              />
-            ) : undefined
-          }
-          thumbIcon={
-            !plan || plan === "free" ? (
-              <CrownSmall className="size-full text-neutral-500" />
-            ) : undefined
-          }
-        />
-      </div>
+      {/* Custom Style Options (for custom/holographic types) */}
+      {showCustomStyleOptions && (
+        <div className="space-y-3">
+          {/* Dot Style */}
+          <div>
+            <span className="block text-sm font-medium text-neutral-700">
+              Dot Style
+            </span>
+            <div className="mt-1.5 flex gap-2">
+              {QR_DOT_STYLES.map((style) => {
+                const isSelected =
+                  (data.qrStyle?.dotStyle || "square") === style.value;
+                return (
+                  <button
+                    key={style.value}
+                    type="button"
+                    onClick={() =>
+                      setData((d) => ({
+                        ...d,
+                        qrStyle: { ...d.qrStyle, dotStyle: style.value },
+                      }))
+                    }
+                    className={cn(
+                      "rounded-md border px-3 py-1 text-xs font-medium transition-all",
+                      isSelected
+                        ? "border-black bg-black text-white"
+                        : "border-neutral-200 text-neutral-600 hover:border-neutral-300",
+                    )}
+                  >
+                    {style.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-      {/* Color selector */}
-      <div>
-        <span className="block text-sm font-medium text-neutral-700">
-          QR Code Color
-        </span>
-        <div className="mt-2 flex gap-6">
-          <div className="relative flex h-9 w-32 shrink-0 rounded-md shadow-sm">
-            <Tooltip
-              content={
-                <div className="flex max-w-xs flex-col items-center space-y-3 p-5 text-center">
-                  <HexColorPicker
-                    color={data.fgColor}
-                    onChange={onColorChange}
-                  />
-                </div>
-              }
-            >
-              <div
-                className="h-full w-12 rounded-l-md border"
-                style={{
-                  backgroundColor: data.fgColor,
-                  borderColor: data.fgColor,
-                }}
-              />
-            </Tooltip>
-            <HexColorInput
-              id="color"
-              name="color"
-              color={data.fgColor}
-              onChange={onColorChange}
-              prefixed
-              style={{ borderColor: data.fgColor }}
-              className="block w-full rounded-r-md border-2 border-l-0 pl-3 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-black sm:text-sm"
-            />
-          </div>
-          <div className="mt-1 flex flex-wrap items-center gap-3">
-            {DEFAULT_COLORS.map((color) => {
-              const isSelected = data.fgColor === color;
-              return (
-                <button
-                  key={color}
-                  type="button"
-                  aria-pressed={isSelected}
-                  onClick={() => setData((d) => ({ ...d, fgColor: color }))}
-                  className={cn(
-                    "flex size-7 items-center justify-center rounded-full transition-all",
-                    isSelected
-                      ? "ring-1 ring-black ring-offset-[3px]"
-                      : "ring-black/10 hover:ring-4",
-                  )}
-                  style={{ backgroundColor: color }}
-                >
-                  {isSelected && <Check2 className="size-4 text-white" />}
-                </button>
-              );
-            })}
+          {/* Corner Style */}
+          <div>
+            <span className="block text-sm font-medium text-neutral-700">
+              Corner Style
+            </span>
+            <div className="mt-1.5 flex gap-2">
+              {QR_CORNER_STYLES.map((style) => {
+                const isSelected =
+                  (data.qrStyle?.cornerStyle || "square") === style.value;
+                return (
+                  <button
+                    key={style.value}
+                    type="button"
+                    onClick={() =>
+                      setData((d) => ({
+                        ...d,
+                        qrStyle: { ...d.qrStyle, cornerStyle: style.value },
+                      }))
+                    }
+                    className={cn(
+                      "rounded-md border px-3 py-1 text-xs font-medium transition-all",
+                      isSelected
+                        ? "border-black bg-black text-white"
+                        : "border-neutral-200 text-neutral-600 hover:border-neutral-300",
+                    )}
+                  >
+                    {style.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Holographic Gradient Options */}
+      {showHolographicOptions && (
+        <div className="space-y-3">
+          {/* Gradient Direction */}
+          <div>
+            <span className="block text-sm font-medium text-neutral-700">
+              Gradient Direction
+            </span>
+            <div className="mt-1.5 flex gap-2">
+              {QR_GRADIENT_DIRECTIONS.map((dir) => {
+                const isSelected =
+                  (data.qrStyle?.gradientDirection || "horizontal") ===
+                  dir.value;
+                return (
+                  <button
+                    key={dir.value}
+                    type="button"
+                    onClick={() =>
+                      setData((d) => ({
+                        ...d,
+                        qrStyle: {
+                          ...d.qrStyle,
+                          gradientDirection: dir.value,
+                        },
+                      }))
+                    }
+                    className={cn(
+                      "rounded-md border px-3 py-1 text-xs font-medium transition-all",
+                      isSelected
+                        ? "border-black bg-black text-white"
+                        : "border-neutral-200 text-neutral-600 hover:border-neutral-300",
+                    )}
+                  >
+                    {dir.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Holographic Color Presets */}
+          <div>
+            <span className="block text-sm font-medium text-neutral-700">
+              Holographic Preset
+            </span>
+            <div className="mt-1.5 flex flex-wrap gap-2">
+              {HOLOGRAPHIC_PRESETS.map((preset) => {
+                const isSelected =
+                  data.qrStyle?.gradientStartColor === preset.start &&
+                  data.qrStyle?.gradientEndColor === preset.end;
+                return (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() =>
+                      setData((d) => ({
+                        ...d,
+                        qrStyle: {
+                          ...d.qrStyle,
+                          gradientStartColor: preset.start,
+                          gradientEndColor: preset.end,
+                        },
+                      }))
+                    }
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-all",
+                      isSelected
+                        ? "border-black ring-1 ring-black"
+                        : "border-neutral-200 hover:border-neutral-300",
+                    )}
+                  >
+                    <span
+                      className="inline-block h-3 w-6 rounded-sm"
+                      style={{
+                        background: `linear-gradient(to right, ${preset.start}, ${preset.end})`,
+                      }}
+                    />
+                    <span className="text-neutral-600">{preset.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logo toggle */}
+      {!isCube3D && data.qrType !== "micro" && data.qrType !== "compact" && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <label
+              className="text-sm font-medium text-neutral-700"
+              htmlFor={`${id}-show-logo`}
+            >
+              Logo
+            </label>
+            <InfoTooltip content="Display your logo in the center of the QR code. [Learn more.](https://dub.co/help/article/custom-qr-codes)" />
+          </div>
+          <Switch
+            id={`${id}-hide-logo`}
+            checked={!data.hideLogo}
+            fn={() => {
+              setData((d) => ({ ...d, hideLogo: !d.hideLogo }));
+            }}
+            disabledTooltip={
+              !plan || plan === "free" ? (
+                <TooltipContent
+                  title="You need to be on the Pro plan and above to customize your QR Code logo."
+                  cta="Upgrade to Pro"
+                  href={slug ? `/${slug}/upgrade` : "https://dub.co/pricing"}
+                  target="_blank"
+                />
+              ) : undefined
+            }
+            thumbIcon={
+              !plan || plan === "free" ? (
+                <CrownSmall className="size-full text-neutral-500" />
+              ) : undefined
+            }
+          />
+        </div>
+      )}
+
+      {/* Color selector (hidden for holographic since it uses gradients) */}
+      {!showHolographicOptions && (
+        <div>
+          <span className="block text-sm font-medium text-neutral-700">
+            QR Code Color
+          </span>
+          <div className="mt-2 flex gap-6">
+            <div className="relative flex h-9 w-32 shrink-0 rounded-md shadow-sm">
+              <Tooltip
+                content={
+                  <div className="flex max-w-xs flex-col items-center space-y-3 p-5 text-center">
+                    <HexColorPicker
+                      color={data.fgColor}
+                      onChange={onColorChange}
+                    />
+                  </div>
+                }
+              >
+                <div
+                  className="h-full w-12 rounded-l-md border"
+                  style={{
+                    backgroundColor: data.fgColor,
+                    borderColor: data.fgColor,
+                  }}
+                />
+              </Tooltip>
+              <HexColorInput
+                id="color"
+                name="color"
+                color={data.fgColor}
+                onChange={onColorChange}
+                prefixed
+                style={{ borderColor: data.fgColor }}
+                className="block w-full rounded-r-md border-2 border-l-0 pl-3 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-black sm:text-sm"
+              />
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-3">
+              {DEFAULT_COLORS.map((color) => {
+                const isSelected = data.fgColor === color;
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    aria-pressed={isSelected}
+                    onClick={() => setData((d) => ({ ...d, fgColor: color }))}
+                    className={cn(
+                      "flex size-7 items-center justify-center rounded-full transition-all",
+                      isSelected
+                        ? "ring-1 ring-black ring-offset-[3px]"
+                        : "ring-black/10 hover:ring-4",
+                    )}
+                    style={{ backgroundColor: color }}
+                  >
+                    {isSelected && <Check2 className="size-4 text-white" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex items-center justify-end gap-2">
         <Button

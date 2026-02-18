@@ -1909,8 +1909,8 @@ export function EmbedPreview({ group }: { group: GroupWithProgramProps }) {
                       x2="1"
                       gradientUnits="objectBoundingBox"
                     >
-                      <stop offset="0%" stopColor="#7D3AEC" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#DA2778" stopOpacity="1" />
+                      <stop offset="0%" stopColor="#ea00ea" stopOpacity="1" />
+                      <stop offset="100%" stopColor="#2699fe" stopOpacity="1" />
                     </linearGradient>
                   </defs>
                 </svg>

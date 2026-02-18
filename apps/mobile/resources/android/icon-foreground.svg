@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="432" height="432" viewBox="0 0 432 432">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ea00ea"/>
+      <stop offset="100%" stop-color="#2699fe"/>
+    </linearGradient>
+  </defs>
+  <rect width="432" height="432" rx="78" fill="#3c3c3c"/>
+  <!-- QR finder pattern top-left -->
+  <rect x="65" y="65" width="129" height="129" rx="13" fill="url(#bg-grad)"/>
+  <rect x="90.8" y="90.8" width="77.4" height="77.4" rx="9" fill="#3c3c3c"/>
+  <rect x="108" y="108" width="43" height="43" rx="6" fill="url(#bg-grad)"/>
+  <!-- QR finder pattern top-right -->
+  <rect x="237" y="65" width="129" height="129" rx="13" fill="#2699fe"/>
+  <rect x="262.79999999999995" y="90.8" width="77.4" height="77.4" rx="9" fill="#3c3c3c"/>
+  <rect x="280" y="108" width="43" height="43" rx="6" fill="#2699fe"/>
+  <!-- QR finder pattern bottom-left -->
+  <rect x="65" y="237" width="129" height="129" rx="13" fill="#4bce2a"/>
+  <rect x="90.8" y="262.79999999999995" width="77.4" height="77.4" rx="9" fill="#3c3c3c"/>
+  <rect x="108" y="280" width="43" height="43" rx="6" fill="#4bce2a"/>
+  <!-- Data dots -->
+  <circle cx="215.5" cy="215.5" r="15.049999999999999" fill="#c4653a"/>
+  <circle cx="258.5" cy="258.5" r="15.049999999999999" fill="#ea00ea"/>
+  <circle cx="301.5" cy="301.5" r="15.049999999999999" fill="#2699fe"/>
+  <circle cx="215.5" cy="280" r="10.75" fill="#4bce2a"/>
+  <circle cx="280" cy="215.5" r="10.75" fill="#c4653a"/>
+</svg>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QR Creation</string>
+    <string name="title_activity_main">QR Creation</string>
+    <string name="package_name">com.omegaui.qrcreation</string>
+    <string name="custom_url_scheme">qrcreation</string>
+</resources>

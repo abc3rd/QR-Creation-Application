@@ -570,7 +570,7 @@ function BrandedChart({
   return (
     <div
       className="relative size-full"
-      style={{ "--color": color || "#DA2778" } as CSSProperties}
+      style={{ "--color": color || "#ea00ea" } as CSSProperties}
     >
       <TimeSeriesChart
         data={data}
@@ -611,8 +611,8 @@ function BrandedChart({
           {(context) => (
             <LinearGradient
               id={`${id}-color-gradient`}
-              from={color || "#7D3AEC"}
-              to={color || "#DA2778"}
+              from={color || "#ea00ea"}
+              to={color || "#2699fe"}
               x1={0}
               x2={context?.width ?? 1}
               gradientUnits="userSpaceOnUse"

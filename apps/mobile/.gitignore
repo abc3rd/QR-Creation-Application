@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+android/capacitor-cordova-android-plugins/
+
+# Signing keys — NEVER commit
+*.jks
+*.keystore
+release-key.*
+
+# IDE
+.idea/
+*.iml
+
+# Generated resources (rebuild with npm run icons/splash)
+android/app/src/main/res/mipmap-*/ic_launcher*.png
+android/app/src/main/res/drawable*/splash.png
+resources/android/*.png

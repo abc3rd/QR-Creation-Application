@@ -1,0 +1,83 @@
+{
+  "control": [
+    { "VTOY_DEFAULT_SEARCH_ROOT": "/ISOs" },
+    { "VTOY_MENU_TIMEOUT": "10" },
+    { "VTOY_DEFAULT_IMAGE": "/ISOs/workstation/ubuntu-24.04-desktop-amd64.iso" }
+  ],
+  "theme": {
+    "display_mode": "CLI",
+    "gfxmode": "1920x1080",
+    "serial_param": "--unit=0 --speed=9600"
+  },
+  "menu_alias": [
+    {
+      "image": "/ISOs/workstation/ubuntu-24.04-desktop-amd64.iso",
+      "alias": ">>> Ubuntu 24.04 AI Workstation (Main OS) <<<"
+    },
+    {
+      "image": "/ISOs/workstation/linuxmint-22-cinnamon-64bit.iso",
+      "alias": "Linux Mint 22 Desktop"
+    },
+    {
+      "image": "/ISOs/boot-tools/HBCD_PE_x64.iso",
+      "alias": "Hiren's Boot CD PE (Recovery & Diagnostics)"
+    },
+    {
+      "image": "/ISOs/boot-tools/MediCat.iso",
+      "alias": "MediCat USB (Advanced Recovery)"
+    },
+    {
+      "image": "/ISOs/recovery/systemrescue.iso",
+      "alias": "SystemRescue (Disk & Partition Recovery)"
+    },
+    {
+      "image": "/ISOs/recovery/clonezilla-live.iso",
+      "alias": "Clonezilla (Disk Cloning & Imaging)"
+    }
+  ],
+  "menu_class": [
+    {
+      "key": "/ISOs/workstation",
+      "class": "ubuntu"
+    },
+    {
+      "key": "/ISOs/boot-tools",
+      "class": "tools"
+    },
+    {
+      "key": "/ISOs/recovery",
+      "class": "recovery"
+    }
+  ],
+  "persistence": [
+    {
+      "image": "/ISOs/workstation/ubuntu-24.04-desktop-amd64.iso",
+      "backend": [
+        {
+          "type": "partition",
+          "label": "PERSISTENCE"
+        }
+      ],
+      "autosel": 1,
+      "timeout": 5
+    },
+    {
+      "image": "/ISOs/workstation/linuxmint-22-cinnamon-64bit.iso",
+      "backend": [
+        {
+          "type": "partition",
+          "label": "PERSISTENCE"
+        }
+      ],
+      "autosel": 1,
+      "timeout": 5
+    }
+  ],
+  "auto_install": [],
+  "injection": [
+    {
+      "image": "/ISOs/workstation/ubuntu-24.04-desktop-amd64.iso",
+      "archive": "/ventoy/inject/ubuntu-overlay.tar.gz"
+    }
+  ]
+}
