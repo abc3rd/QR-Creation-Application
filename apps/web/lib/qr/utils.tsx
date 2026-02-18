@@ -238,8 +238,8 @@ function renderCornerModule(
 export function generateGradientDef(
   id: string,
   direction: string = "horizontal",
-  startColor: string = "#8A2BE2",
-  endColor: string = "#00CED1",
+  startColor: string = "#ea00ea",
+  endColor: string = "#2699fe",
 ): JSX.Element {
   if (direction === "radial") {
     return (
@@ -446,8 +446,8 @@ export function QRCodeSVG(props: QRPropsSVG) {
           generateGradientDef(
             gradientId,
             qrStyle?.gradientDirection || "horizontal",
-            qrStyle?.gradientStartColor || "#8A2BE2",
-            qrStyle?.gradientEndColor || "#00CED1",
+            qrStyle?.gradientStartColor || "#ea00ea",
+            qrStyle?.gradientEndColor || "#2699fe",
           )}
         <path
           fill={bgColor}

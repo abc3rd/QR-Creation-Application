@@ -34,7 +34,7 @@ const RegisterDomainSuccess = ({
               className="animate-gradient-move font-display mt-4 bg-clip-text text-xl font-semibold text-transparent"
               style={{
                 backgroundImage:
-                  "linear-gradient(45deg, #7c3aed, #db2777, #7c3aed, #db2777, #7c3aed)",
+                  "linear-gradient(45deg, #ea00ea, #2699fe, #ea00ea, #2699fe, #ea00ea)",
                 backgroundSize: "200% 100%",
               }}
             >

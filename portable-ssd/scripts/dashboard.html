@@ -5,16 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CloudConnect Portable Hub</title>
     <style>
+        :root {
+            --magenta: #ea00ea;
+            --blue: #2699fe;
+            --green: #4bce2a;
+            --dark: #3c3c3c;
+            --copper: #c4653a;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a1a;
-            color: #e0e0ff;
+            background: var(--dark);
+            color: #e0e0e0;
             min-height: 100vh;
         }
         .header {
-            background: linear-gradient(135deg, #1a1a3e, #0d0d2b);
-            border-bottom: 1px solid #2a2a5a;
+            background: #2b2b2b;
+            border-bottom: 1px solid #555;
             padding: 24px 32px;
             display: flex;
             align-items: center;
@@ -23,12 +30,12 @@
         .header h1 {
             font-size: 24px;
             font-weight: 700;
-            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            background: linear-gradient(135deg, var(--magenta), var(--blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .header .subtitle {
-            color: #8888bb;
+            color: #aaa;
             font-size: 14px;
         }
         .grid {
@@ -44,14 +51,14 @@
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #6666aa;
+            color: var(--copper);
             padding: 8px 0;
-            border-bottom: 1px solid #1a1a3e;
+            border-bottom: 1px solid #555;
             margin-top: 12px;
         }
         .card {
-            background: #12122a;
-            border: 1px solid #2a2a5a;
+            background: #2b2b2b;
+            border: 1px solid #555;
             border-radius: 12px;
             padding: 24px;
             transition: all 0.2s;
@@ -61,9 +68,9 @@
             display: block;
         }
         .card:hover {
-            border-color: #7c3aed;
+            border-color: var(--magenta);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
+            box-shadow: 0 8px 24px rgba(234, 0, 234, 0.15);
         }
         .card .icon {
             font-size: 32px;
@@ -75,15 +82,15 @@
         }
         .card p {
             font-size: 13px;
-            color: #8888bb;
+            color: #aaa;
             line-height: 1.5;
         }
         .card .url {
             display: inline-block;
             margin-top: 12px;
             font-size: 12px;
-            color: #7c3aed;
-            background: rgba(124, 58, 237, 0.1);
+            color: var(--blue);
+            background: rgba(38, 153, 254, 0.1);
             padding: 4px 10px;
             border-radius: 6px;
             font-family: monospace;
@@ -94,14 +101,14 @@
             height: 8px;
             border-radius: 50%;
             margin-right: 6px;
-            background: #444;
+            background: #555;
         }
-        .status.online { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
-        .status.offline { background: #ef4444; }
+        .status.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+        .status.offline { background: var(--copper); }
         .footer {
             text-align: center;
             padding: 24px;
-            color: #4a4a7a;
+            color: #777;
             font-size: 12px;
         }
     </style>

@@ -194,6 +194,13 @@ const config: Config = {
         },
       },
       colors: {
+        brand: {
+          magenta: "#ea00ea",
+          blue: "#2699fe",
+          green: "#4bce2a",
+          dark: "#3c3c3c",
+          copper: "#c4653a",
+        },
         brown: {
           50: "#fdf8f6",
           100: "#f2e8e5",

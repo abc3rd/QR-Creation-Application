@@ -62,9 +62,9 @@ export const QR_GRADIENT_DIRECTIONS: { value: GradientDirection; label: string }
 
 /** Preset holographic gradient color pairs */
 export const HOLOGRAPHIC_PRESETS: { label: string; start: string; end: string }[] = [
-  { label: "Violet-Cyan", start: "#8A2BE2", end: "#00CED1" },
-  { label: "Pink-Blue", start: "#FF69B4", end: "#4169E1" },
-  { label: "Gold-Emerald", start: "#FFD700", end: "#50C878" },
-  { label: "Coral-Teal", start: "#FF7F50", end: "#008080" },
-  { label: "Rose-Indigo", start: "#FF007F", end: "#4B0082" },
+  { label: "Magenta-Blue", start: "#ea00ea", end: "#2699fe" },
+  { label: "Blue-Green", start: "#2699fe", end: "#4bce2a" },
+  { label: "Magenta-Green", start: "#ea00ea", end: "#4bce2a" },
+  { label: "Copper-Blue", start: "#c4653a", end: "#2699fe" },
+  { label: "Copper-Magenta", start: "#c4653a", end: "#ea00ea" },
 ];
